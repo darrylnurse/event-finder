@@ -31,7 +31,7 @@ The following **additional** features are implemented:
 
 Here's a walkthrough of implemented user stories:
 
-![](https://github.com/darrylnurse/event-finder/blob/main/eventfinder.gif)
+![](https://github.com/darrylnurse/event-finder/blob/master/eventfinder.gif)
 
 <!-- Replace this with whatever GIF tool you used! -->
 GIF created with LICECAP
