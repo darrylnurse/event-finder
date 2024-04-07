@@ -1,4 +1,9 @@
 import {useEffect, useState} from "react";
+import { Bar } from 'react-chartjs-2';
+import { Chart, registerables } from 'chart.js';
+Chart.register(...registerables);
+import Events from "./routes/Events.jsx";
+
 
 const ID = import.meta.env.VITE_CLIENT_ID;
 const KEY = import.meta.env.VITE_CLIENT_SECRET;
@@ -91,6 +96,7 @@ function App() {
     const computeHighestScore = () => {
       let newHighestScore = -Infinity;
       let newHighestPerformerName = "";
+      let associatedEventTitle = ""; // Simplified to only store the event title
 
       const eventsToCheck = searchInput && searchInput.length > 0 ? filteredEvents : eventList?.events;
 
@@ -100,6 +106,7 @@ function App() {
             if (performer.score > newHighestScore) {
               newHighestScore = performer.score;
               newHighestPerformerName = performer.name;
+              associatedEventTitle = event.short_title; // Update to store only the event title
             }
           });
         });
@@ -108,6 +115,7 @@ function App() {
           setHighestRated({
             highScore: newHighestScore,
             name: newHighestPerformerName,
+            eventTitle: associatedEventTitle // Store the event title directly
           });
         }
       }
@@ -117,14 +125,83 @@ function App() {
 
   }, [filteredEvents, eventList, searchInput]);
 
+  const [chartData, setChartData] = useState({
+    labels: [],
+    datasets: [{
+      label: 'Event Price',
+      data: [],
+      backgroundColor: '#C971FF',
+      borderColor: '#E2B2FF',
+      borderWidth: 2,
+    }],
+  });
+
+  useEffect(() => {
+    if (eventList && eventList.events) {
+      const processedLabels = eventList.events.map(event =>
+          event.short_title.length > 10 ? `${event.short_title.slice(0, 15)}...` : event.short_title
+      );
+      const eventPrices = eventList.events.map(event => event.stats.lowest_price || 0);
+
+      setChartData({
+        labels: processedLabels,
+        datasets: [{
+          ...chartData.datasets[0],
+          data: eventPrices,
+        }]
+      });
+    }
+  }, [eventList]);
 
   return (
       <div id={"page"}
-           className={"grid grid-cols-4 bg-purple-900 text-white p-3 gap-3 h-screen"}>
+           className={"grid grid-cols-4 text-white gap-3"}>
 
-        <div className={"overflow-hidden rounded-2xl bg-gray-400 bg-opacity-50"}><img className={"object-cover h-full object-center"} alt="leborn jame" src={"src/assets/justimberlake.gif"}/></div>
+        <div className={"overflow-hidden h-screen flex flex-col items-center rounded-2xl bg-gray-400 bg-opacity-50"}>
+          <div className="p-10 w-full h-1/4" style={{width: '100%', height: '75%'}}>
+            <Bar data={chartData} options={{
+              maintainAspectRatio: false,
+              indexAxis: 'y',
+              plugins : {
+                legend : {
+                  labels: {
+                    color: 'white',
+                  }
+                },
+                title : {
+                  text: "Event Prices in Dollars",
+                  display: true,
+                  color: 'white',
+                  font: {
+                    size: 20
+                  },
+                },
+              },
+              scales: {
+                x : {
+                  ticks: {
+                    color: 'white',
+                  }
+                },
+                y: {
+                  ticks:{
+                    color: 'white',
+                  },
+                  beginAtZero: true
+                }
+              }
+            }} />
+          </div>
+          <div className={"h-1/6"}>
+            <img
+                className={"h-full"}
+                alt={"justimber"}
+                src={"/src/assets/justimberlake.gif"}
+            />
+          </div>
+        </div>
 
-        <div className={"rounded-2xl bg-gray-400 bg-opacity-50 col-span-2 flex flex-col"}>
+        <div className={"rounded-2xl overflow-hidden bg-gray-400 bg-opacity-50 col-span-2 flex flex-col"}>
           <div className={"text-2xl h-1/6 flex justify-center items-center font-bold"}><h1>Event Finder</h1></div>
 
           <div className={"h-1/6 flex p-4 gap-4 justify-center items-center"}>
@@ -151,54 +228,16 @@ function App() {
             </select>
           </div>
 
-          {
-            searchInput.length > 0
-            ?
-                <div className={"h-full"}>
-                  <ul className={"h-full flex flex-col gap-2 p-2 justify-evenly"}>
-                    <li className={"rounded-2xl grid-cols-4 grid gap-2"}>
-                      <div className={"col-span-2 flex justify-center text-center items-center rounded-xl p-3"}>Event</div>
-                      <div className={"flex justify-center items-center rounded-xl"}>Date</div>
-                      <div className={"flex justify-center text-center p-2 items-center rounded-xl"}>Location</div>
-                    </li>
-                    {filteredEvents.map((event) =>
-                        <li key={event.id}
-                            className={"h-full rounded-2xl grid-cols-4 grid gap-2"}>
-                          <div className={"col-span-2 flex justify-center text-center items-center rounded-xl p-3 bg-opacity-60 bg-gray-400"}>{event.title}</div>
-                          <div className={"flex justify-center items-center rounded-xl bg-opacity-60 bg-gray-400"}>{new Date(event.datetime_utc).toDateString()}</div>
-                          <div className={"flex justify-center text-center p-2 items-center rounded-xl bg-opacity-60 bg-gray-400"}>{event.venue.name}</div>
-                        </li>
-                    )}
-                  </ul>
-                </div>
-                :
-                <div className={"h-full"}>
-                  <ul className={"h-full flex flex-col gap-2 p-2 justify-evenly"}>
-                    <li className={"rounded-2xl grid-cols-4 grid gap-2"}>
-                      <div className={"col-span-2 flex justify-center text-center items-center rounded-xl p-3"}>Event</div>
-                      <div className={"flex justify-center items-center rounded-xl"}>Date</div>
-                      <div className={"flex justify-center text-center p-2 items-center rounded-xl"}>Location</div>
-                    </li>
-                    {eventList && eventList.events.map((event) =>
-                        <li key={event.id}
-                            className={"h-full rounded-2xl grid-cols-4 grid gap-2"}>
-                          <div
-                              className={"col-span-2 flex justify-center text-center bg-opacity-60 bg-gray-400 items-center rounded-xl p-3"}>{event.title}</div>
-                          <div
-                              className={"flex justify-center items-center rounded-xl bg-opacity-60 bg-gray-400"}>{new Date(event.datetime_utc).toDateString()}</div>
-                          <div
-                              className={"flex justify-center text-center p-2 items-center bg-opacity-60 bg-gray-400 rounded-xl"}>{event.venue.name}</div>
-                        </li>
-                    )}
-                  </ul>
-                </div>
-          }
+          <div className={"overflow-scroll p-2"}>
+            {/*<Outlet/>*/}
+            <Events searchInput={searchInput} eventList={eventList} filteredEvents={filteredEvents}/>
+          </div>
 
         </div>
 
-        <div className={"grid grid-rows-3 gap-3"}>
+        <div className={"select-none grid grid-rows-3 gap-3"}>
           <div
-              className={"order-2 bg-gray-400 bg-opacity-50 rounded-2xl flex items-center justify-center text-3xl font-bold"}>{tomorrowNumber || "No"} events
+              className={"p-4 text-center order-2 bg-gray-400 bg-opacity-50 rounded-2xl flex items-center justify-center text-3xl font-bold"}>{tomorrowNumber || "No"} events
             tomorrow!
           </div>
 
@@ -212,11 +251,16 @@ function App() {
             <h2 className={"font-bold"}>{performer.name}</h2>
           </div>
 
-          <div className={"order-3 bg-gray-400 bg-opacity-50 rounded-2xl flex flex-col gap-2 items-center justify-center"}>
+          <div
+              className={"order-3 bg-gray-400 bg-opacity-50 rounded-2xl flex flex-col gap-2 items-center justify-center"}>
             <div className={"font-bold text-xl"}><h1>Most Popular Performer</h1></div>
-            <div className={"text-xl"}>{highestRated.name}</div>
+            <div className={"text-3xl p-3"}>{highestRated.name}</div>
+            {highestRated.eventTitle && ( // Conditional rendering for the event title
+                <div className={"p-4 text-center"}>{highestRated.eventTitle}</div>
+            )}
             <div>Popularity Score: {highestRated.highScore}</div>
           </div>
+
 
         </div>
 
