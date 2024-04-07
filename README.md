@@ -4,7 +4,7 @@ Submitted by: Darryl Nurse
 
 This web app: Finds the event
 
-Time spent: 12 hours spent in total
+Time spent: 15 hours spent in total
 
 ## Required Features
 
