@@ -1,10 +1,10 @@
-# Web Development Project 5 - Event Finder
+# Web Development Project 5 && 6 - Event Finder
 
 Submitted by: Darryl Nurse
 
 This web app: Finds the event
 
-Time spent: 8 hours spent in total
+Time spent: 12 hours spent in total
 
 ## Required Features
 
@@ -17,11 +17,18 @@ The following **required** functionality is completed:
 - [x] **A search bar allows the user to search for an item in the fetched data**
 - [x] **Multiple different filters (2+) allow the user to filter items in the database by specified categories** //the search bar counts right
 
+  [x] **The app includes at least one unique chart developed using the fetched data that tell an interesting story**
+- [ ] **Clicking on an item in the list view displays more details about it**
+- [ ] **Clicking on an item has a direct, unique link to that item's detail view page**
+
 The following **optional** features are implemented:
 
 - [x] Multiple filters can be applied simultaneously
 - [x] Filters use different input types such as a text input, a selection, or a slider
 - [ ] The user can enter specific bounds for filter values
+
+- [ ] The site's customized dashboard contains more content that explains what is interesting about the data
+- [x] The site allows users to toggle between different data visualizations
 
 The following **additional** features are implemented:
 
@@ -32,6 +39,10 @@ The following **additional** features are implemented:
 Here's a walkthrough of implemented user stories:
 
 ![](https://github.com/darrylnurse/event-finder/blob/master/eventfinder.gif)
+
+![](https://github.com/darrylnurse/event-finder/blob/master/eventfinder2.gif)
+
+
 
 <!-- Replace this with whatever GIF tool you used! -->
 GIF created with LICECAP
@@ -46,6 +57,8 @@ Describe any challenges encountered while building the app.
 
 FINDING AN API THAT WORKS AND HAS A VALID API KEY SYSTEM IS SO HARD 
 MARVEL IS TRASH THROUGH AND THROUGH DC BETTER
+
+Didnt have enough time this week to finish or even start working on the react router. I will do it after class and resubmit!
 
 ## License
 
